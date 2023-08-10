@@ -1,0 +1,202 @@
+<!DOCTYPE html><html><head><title id="Tabs">Rollos verwalten</title><!-- Versions-Monitor: sv 1.13.0.2023.08.01 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
+*{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
+body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
+body::-webkit-scrollbar{width:20px;height:20px;}
+body::-webkit-scrollbar-track{background-color:#37474f;}
+body::-webkit-scrollbar-thumb{background-color:black; border-radius:10px; border:1px solid #00f0f0;}
+.room{background-color:#455a64;padding:5px;border-radius:20px;color:#eee;margin-bottom:1px;}
+h4{margin:0;margin-bottom:3px;text-align:center;}
+.room > div{display:inline-block;width:88px;height:110px;background-color:#56676f;border-radius:10px;padding:5px;}
+.favorit{font-size:2em;cursor:pointer;color:#00FFFF;}
+.relay{font-size:3em;cursor:pointer;}
+.relay:hover{background-color:#444;}
+.relay big {font-size:0.4em;position:absolute;margin-left:-28px;margin-top:30px;opacity:0.7;z-index:0;}
+.schalter{cursor:pointer;}
+.uhr{font-size:1em;text-align:center;}
+table{vertical-align:top;margin:0;height:1%;}
+form{display:inline;}
+form.cloud{display:none;}
+fieldset{padding:3px;border-radius:6px;}
+label.schreiben{cursor:hand;cursor:pointer;}
+td.liste{border-style:solid;border-width:1px;border-color:#f5f5f5;}
+textarea{overflow:auto;}
+iframe{background-color:#f5f5f5;}
+.on{background-color:lime;color:black;}
+.stop{background-color:white;color:red;}
+.off{background-color:tomato;color:white;}
+.knopf{background-color:black;color:white;}
+a:hover{color:white;position:relative;right:1px;top:1px;text-decoration:none;}
+a{color:#ffffff;text-decoration:none;}
+ol{margin:0;}
+legend, ul, ol{white-space:nowrap;}
+</style><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><script>
+let rollopos = 0;
+// Liste Favoriten Rollohöhe
+let rollosequence = [
+ '75',
+ '50',
+ '25',
+ '10',
+ '0',
+ '10',
+ '25',
+ '50',
+ '75',
+ '100',
+];
+function RolloFav(ip, ud) {
+rollopos++;
+if (rollosequence.length === rollopos) {
+rollopos = 0;
+};
+fetch('http://' + ip + '/roller/0?go=to_pos&roller_pos=' + rollosequence[rollopos])
+.then()	
+.catch(err => alert('RolloFavoritenfahrt fehlgeschlagen'));
+};
+function RolloPosFahrt(ip, position) {
+  fetch('http://' + ip + '/roller/0?go=to_pos&roller_pos=' + position)
+     .then()
+     .catch(err => alert('Rollofahrt angehalten'));
+}
+function RolloFahrt(ip, ud) {
+  fetch('http://' + ip +'/roller/0?go=' + ud)
+     .then()
+     .catch(err => alert('Rollofahrt angehalten'));
+}
+function RollosFahren(ip, richtung) {
+  fetch('http://' + ip +'/roller/0?go=' + richtung)
+     .then()
+     .catch(err => alert('Rollofahrt angehalten'));
+}
+let Dauer = 1;
+function loadData() {
+  let millis = Dauer * 1000;
+  setInterval(
+    function() {
+	Timer(Dauer);
+	let T1 = 0;
+	let L1 = 0;
+	let L2 = 0;
+	let Volts = 0;
+	let richtung = "stop";
+	let hinweis = "";
+	let arr = [];
+	$("div[data-ip]").each(function(){
+	var ip = $(this).data('ip');
+	var name = $(this).data('name');
+	var linkname = "<a title='Ger&auml;tewebseite &ouml;ffnen' href='http://" + ip + "/' target='new'>" + $(this).data('name') + "</a>";
+	var power = $(this).data('consumption');
+	var shellytype = $(this).data('type');
+	var temptype = $(this).data('temperatur');
+	var relayindex = $(this).data('relayindex');
+	var id = $(this).attr('id');
+		let content = "";
+		fetch('http://' + ip +'/status')	
+		.then(response => response.json())
+		.then(function(data) {
+	T1 = "<span title='Chiptemperatur'>" + data.tmp.tC + "°C</span>";
+	let Spannung = data.voltage;
+	let RolloPos = data.rollers[0].current_pos;
+	let LetzteRichtung = data.rollers[0].last_direction;
+	let FWN = data.update.new_version;
+	let FWO = data.update.old_version;
+	let NFW = "";
+	arr.push(Spannung);
+		if(RolloPos < 4){var Favorit = '<i style="color:#00FFFF;" class="favorit relay-off mdi mdi-circle-outline"></i>';
+		} else if(RolloPos > 3 && RolloPos < 23){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-1"></i>';
+		} else if(RolloPos > 22 && RolloPos < 28){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-2"></i>';
+		} else if(RolloPos > 27 && RolloPos < 48){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-3"></i>';
+		} else if(RolloPos > 47 && RolloPos < 53){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-4"></i>';
+		} else if(RolloPos > 52 && RolloPos < 73){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-5"></i>';
+		} else if(RolloPos > 72 && RolloPos < 78){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-6"></i>';
+		} else if(RolloPos > 77 && RolloPos < 98){var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-7"></i>';
+		} else {var Favorit = '<i class="favorit relay-off mdi mdi-circle-slice-8"></i>';}
+	let nachOben = "<span class=\"schalter\" title=\"&Ouml;ffnen\" onclick=\"RolloFahrt(\'" + ip + "\', \'open\');\"><i style='font-size:2em;color:#fff;' class='relay-off mdi mdi-arrow-up-bold'></i></span>";
+	let nachUnten = "<span class=\"schalter\" title=\"Schließen\" onclick=\"RolloFahrt(\'" + ip + "\', \'close\');\"><i style='font-size:2em;color:#fff;' class='relay-off mdi mdi-arrow-down-bold'></i></span>";
+	if(RolloPos === 100)
+	nachOben = "<i title='" + RolloPos + "%' style='font-size:2em;color:#fff;' class='relay-off mdi mdi-arrow-up-bold-outline'></i>";
+	if(RolloPos === 0)
+	nachUnten = "<i title='" + RolloPos + "%' style='font-size:2em;color:#fff;' class='relay-off mdi mdi-arrow-down-bold-outline'></i>";
+	let Anhalten = "<span title=\"Anhalten\" class=\"schalter\" onclick=\"RolloFahrt(\'" + ip + "\', \'stop\');\"><i style='font-size:2em;color:#ff0;' class='relay-off mdi mdi-pause'></i></span>";
+	if(LetzteRichtung === "open"){
+	richtung = "close";
+	hinweis = "Schließen";
+	}
+	if(LetzteRichtung === "close"){
+	richtung = "open";
+	hinweis = "&Ouml;ffnen";
+	}
+	if(FWN === FWO){
+	FWN = "";
+	NFW = "";
+	} else {
+	NFW = "<span style='color:#ff0' title='Ger&auml;t nicht mit Internet verbunden oder &#10;&#10; neue Firmware vorhanden: " + FWN + "&#10;Klick f&uuml;r Update, nur wenn NEUE Version in der Info angezeigt wird'><a href='http://" + ip + "/ota?update=1' target='schalter'>&nbsp;<i style='color:#FFFF00;' class='relay-off mdi mdi-rotate-3d-variant'></i></a></span>";
+	}
+		content += "<div><nobr>" + linkname + NFW + "</nobr></div>";
+		if(data.rollers[0].state === "stop"){
+			if(RolloPos >= Dauer){
+			content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#ffffff;" class="relay relay-off mdi mdi-window-shutter-open"><big><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
+			} else {
+			content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#000000;" class="relay relay-off mdi mdi-window-shutter"><big><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
+		}} else {
+	nachOben = Anhalten;
+	nachUnten = Anhalten;
+	richtung = "stop";
+	hinweis = "Fahrt anhalten";
+		content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RolloFahrt(\'' + ip + '\', \'stop\');"><i style="color:#f80;" class="relay relay-off mdi mdi-window-shutter-alert"></i></div>';
+		}
+	L1 = data.rollers[0].power;
+	L2 += L1;
+	L3 = L2.toFixed(2);
+	L4 = L2.toFixed(0);
+	if (Spannung > Volts) {
+	Volts = Spannung;
+	}
+		content += "<div style=\"text-align: center; padding-top: 1px; \">";
+			if (data.rollers[0].power > 0)
+			content += "<small>" + data.rollers[0].power + " Watt</small>";
+			else
+			if (data.meters[0].overpower !== 0)
+			content += "<b><small style=\"color:#0ff;\" title=\"kein PowerMetering\">-</small></b> <small>" + T1 + "</small>";
+			else
+			content += "<b><small style=\"color: #10ff00;\" title=\"keine Leistungsabnahme\">&#149;</small></b> <small>" + T1 + "</small>";
+		content += "<legend style='text-align:center;'>" + nachOben + "<span title='Klick für n&auml;chste Favoritenposition' onclick=\"RolloFav(\'" + ip + "\');\">" + Favorit + "</span>" + nachUnten + "</legend>";
+		content += "</div>";
+		$('#' + id ).html(content);
+	let Voltage = Volts.toFixed(2);
+document.getElementById("Alles").innerHTML = "<b title=\"Maximum von:&#10;" + arr + " Volt\" style=\"text-align: center; color: #10ff00;\">" + L3 + "</b>";
+document.getElementById("Tabs").innerHTML = "meine Rollos: " + L4 + " Watt";
+document.getElementById("Spannend").innerHTML = Voltage;
+		})
+	});
+    }, millis
+  )
+}
+function Timer(s) {
+ document.getElementById("wieoft").innerHTML=s;
+ s--;
+ if (s > 0) {
+  window.setTimeout('Timer(' + s + ')', 999);
+ } else {
+ s = Dauer;
+ }
+}
+</script></head><body scroll="auto">
+<table><tr>
+<td><div class="room"><h4>Anbau</h4><div id="1" data-consumption="true" data-type="roller" data-temperatur="tmp" data-relayindex="0" data-name="Rollo links" data-ip="192.168.178.73"></div></div></td>
+<td><div class="room"><h4>Anbau</h4><div id="2" data-consumption="true" data-type="roller" data-temperatur="tmp" data-relayindex="0" data-name="Rollo rechts" data-ip="192.168.178.77"></div></div></td>
+<td><div class="room"><h4>B&uuml;ro</h4><div id="3" data-consumption="true" data-type="roller" data-temperatur="tmp" data-relayindex="0" data-name="Rollo" data-ip="192.168.178.78"></div></div></td>
+</tr><tr>
+<td colspan="11"><div class="room"><fieldset><legend>Daten werden nach <span id="wieoft"></span> sek. <a href="javascript:location.reload()">aktualisiert</a><iframe src="about:blank" width="0" height="0" name="schalter"></iframe></legend>
+<!-- big style="color:#10ff00">&#149; </big><small style="color:#ffff00">keine LeistungsAbnahme</small> &#149; <big style="color:#00ffff">- </big><small style="color:#00ffff">keine LeistungsMessung</small -->
+<div style="width:100%; text-align:center;"><table style="width:100%; text-align:center;"><tr><td style="width:50%; text-align:right;"><big id="Alles" style="color:#10ff00"></big></td><td style="width:50%; text-align:left;"><b><big style="color:#10ff00">Watt</big></b></td>
+</tr><tr><td style="width:50%; text-align:right;"><b><big id="Spannend" style="color:#0ff"></big></b></td><td style="width:50%; text-align:left;"><b><big style="color:#0ff">Volt</big></b></td>
+</tr --></table></div>
+<!-- UrsprungsScript von Herrn Eurich: https://github.com/shelly-tools/shelly-cors-examples -->
+</fieldset></div></td></tr></table>
+<script>
+$( document ).ready(function() {
+loadData();
+Timer(Dauer);
+})
+</script></body></html>

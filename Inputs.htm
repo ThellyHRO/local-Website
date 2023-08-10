@@ -1,0 +1,158 @@
+<!DOCTYPE html><html><head><title id="Tabs">Inputs anzeigen</title><!-- Versions-Monitor: sv 1.13.0.2023.07.14 --><base target="schalter"><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
+*{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
+body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
+body::-webkit-scrollbar{width:20px;height:20px;}
+body::-webkit-scrollbar-track{background-color:#37474f;}
+body::-webkit-scrollbar-thumb{background-color:black; border-radius:10px; border:1px solid #00f0f0;}
+.room{background-color:#455a64;padding:5px;border-radius:20px;color:#eee;margin-bottom:1px;}
+h4{margin:0;margin-bottom:3px;text-align:center;}
+.room > div{display:inline-block;width:88px;height:110px;background-color:#56676f;border-radius:10px;padding:5px;}
+.favorit{font-size:2em;cursor:pointer;color:#00FFFF;}
+.relay{font-size:3em;cursor:pointer;}
+.relay:hover{background-color:#444;}
+.relay big {font-size:0.4em;position:absolute;margin-left:-28px;margin-top:30px;opacity:0.7;z-index:0;}
+.schalter{cursor:pointer;}
+.uhr{font-size:1em;text-align:center;}
+table{vertical-align:top;margin:0;height:1%;}
+form{display:inline;}
+form.cloud{display:none;}
+fieldset{padding:3px;border-radius:6px;}
+label.schreiben{cursor:hand;cursor:pointer;}
+td.liste{border-style:solid;border-width:1px;border-color:#f5f5f5;}
+textarea{overflow:auto;}
+iframe{background-color:#f5f5f5;}
+.on{background-color:lime;color:black;}
+.stop{background-color:white;color:red;}
+.off{background-color:tomato;color:white;}
+.knopf{background-color:black;color:white;}
+a:hover{color:white;position:relative;right:1px;top:1px;text-decoration:none;}
+a{color:#ffffff;text-decoration:none;}
+ol{margin:0;}
+legend, ul, ol{white-space:nowrap;}
+</style><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><script>
+// Textanzeige der 18 Schaltbefehle des ersten i3 zwischen "" einfügen, für weitere i3 diese Liste verlängern.
+// Auf den Anzeigetext kann auch ein Link gelegt werden, so kann dieser den Anzeigetext dann auch schalten.
+// Input 1
+let i31 = "<a href='http://192.168.178.78/roller/0?go=open' title='B&uuml;roRollo'>Rollo Auf";	// SinglePush
+let i32 = "<a href='http://192.168.178.78/roller/0?go=to_pos&roller_pos=70' title='B&uuml;roRollo'>Rollo 70% Auf";	// DoublePush
+let i33 = "<a href='http://192.168.178.78/roller/0?go=to_pos&roller_pos=50' title='B&uuml;roRollo'>Rollo 50% Auf";	// TriplePusch
+let i34 = "nix";	// Single- & LongPush
+let i35 = "<a href='http://192.168.178.83/relay/0?turn=toggle' title='Sonnenuhr klemmt?'>Sonnenuhr umgestellt";	// Long- & SinglePush
+let i36 = "<a href='http://192.168.178.78/roller/0?go=close' title='B&uuml;roRollo'>Rollo Zu";	// LongPush
+// Input 2
+let i37 = "<a href='http://192.168.178.78/roller/0?go=stop' title='alle Rollos'>Rollos STOP";	// Reihenfolge wie bei Input 1
+let i38 = "<a href='http://192.168.178.39/relay/0?turn=toggle'>Econelo An/Aus";
+let i39 = "<a href='http://192.168.178.79/relay/0?turn=toggle'>Waschmaschine An/Aus";
+let i310 = "<a href='http://192.168.178.84/relay/0?turn=off'>Alle Steckdosen Aus";
+let i311 = "<a href='http://192.168.178.80/relay/0?turn=toggle'>Kaffeemaschine An/Aus";
+let i312 = "<a href='http://192.168.178.84/relay/0?turn=toggle'>USB-Steckdose An/Aus";
+// Input 3
+let i313 = "<a href='http://192.168.178.102/light/0?turn=toggle'>Mond An/Aus";
+let i314 = "<a href='http://192.168.178.103/light/0?turn=toggle'>Mars An/Aus";
+let i315 = "<a href='http://192.168.178.104/light/0?turn=toggle'>Venus An/Aus";
+let i316 = "<a href='http://192.168.178.103/light/0?turn=on&red=255&green=255&blue=255' title='unter diesem Link nur Mars'>Lichter weiss";
+let i317 = "<a href='http://192.168.178.104/light/0?turn=on&red=0&green=255&blue=0' title='unter diesem Link nur Venus'>Lichter farbig";
+let i318 = "<a href='http://192.168.178.101/light/0?turn=toggle' title='unter diesem Link Sonne An/Aus'>3 Lichter An/Aus";
+
+let Dauer = 9;
+function loadData() {
+	let millis = Dauer * 1000;
+	setInterval(
+		function() {
+		Timer(Dauer);
+		$("div[data-ip]").each(function(){
+		var ip = $(this).data('ip');
+		var name = $(this).data('name');
+		var linkname = "<a href='http://" + ip + "/' title='Link zum Ger&auml;t &Ouml;ffnen' target='new'>" + $(this).data('name') + "</a>";
+		var shellytype = $(this).data('type');
+		var relayindex = $(this).data('relayindex');
+		var canal = $(this).data('canalname');
+		var id = $(this).attr('id');
+		let lastsequence = "";
+		let content = "";
+		fetch('http://' + ip + '/status')
+		.then(response => response.json())
+		.then(function(data) {
+	let FWN = data.update.new_version;
+	let FWO = data.update.old_version;
+	let NFW = "";
+	let Uhrzeit = "";
+	let Temperatur = "";
+	let Zeit = data.time;
+	let temp = data.temperature_status;
+	if(FWN === FWO){
+	NFW = "";
+	} else if(relayindex === 0){
+	NFW = "<span style='color:#ff0' title='" + name + " nicht mit Internet verbunden oder &#10;&#10; neue Firmware vorhanden: " + FWN + "&#10;Klick f&uuml;r Update, nur wenn NEUE Version in der Info angezeigt wird'><a href='http://" + ip + "/ota?update=1' target='schalter'> <i style='color:#FFFF00;' class='relay-off mdi mdi-rotate-3d-variant'></i></a></span>";
+	}
+	if(relayindex === 1){
+	Uhrzeit = "<small style='color:#0ff' title='aktuelle Uhrzeit'>&nbsp;" + Zeit + "</small>";
+	}
+	if(relayindex === 2){
+	Temperatur = "<small style='color:#f0f' title='Chiptemperatur'>&nbsp;" + temp + "</small>";
+	}
+		content += "<div>" + linkname + NFW + Uhrzeit + Temperatur + "</div>";
+		let letztertastendruck = data.inputs[relayindex].last_sequence;
+		if(letztertastendruck === "S"){lastsequence = "&#149;<br>SinglePush";
+		} else if(letztertastendruck === "SS"){lastsequence = "&#149; &#149;<br>DoublePush";
+		} else if(letztertastendruck === "SSS"){lastsequence = "&#149; &#149; &#149;<br>TriplePush";
+		} else if(letztertastendruck === "SL"){	lastsequence = "&#149; |<br>Single& LongPush";
+		} else if(letztertastendruck === "LS"){	lastsequence = "| &#149;<br>Long& SinglePush";
+		} else if(letztertastendruck === "L"){lastsequence = "|<br>LongPush";
+		} else if(letztertastendruck === ""){lastsequence = "nichts gedr&uuml;ckt";
+		} else {lastsequence = "k.A.";}
+		let schaltbefehl = ""; // bei weiteren i3-Geräten sind diese Listen zu erweitern, sonst wird der Schaltbefehl vom 1. i3 verwendet
+		if(letztertastendruck === "S" && relayindex === 0){schaltbefehl = "</i><br>" + i31 + "</a>";
+		} else if(letztertastendruck === "SS" && relayindex === 0){schaltbefehl = "</i><br>" + i32 + "</a>";
+		} else if(letztertastendruck === "SSS" && relayindex === 0){schaltbefehl = "</i><br>" + i33 + "</a>";
+		} else if(letztertastendruck === "SL" && relayindex === 0){schaltbefehl = "</i><br>" + i34 + "</a>";
+		} else if(letztertastendruck === "LS" && relayindex === 0){schaltbefehl = "</i><br>" + i35 + "</a>";
+		} else if(letztertastendruck === "L" && relayindex === 0){schaltbefehl = "</i><br>" + i36 + "</a>";
+		} else if(letztertastendruck === "S" && relayindex === 1){schaltbefehl = "</i><br>" + i37 + "</a>";
+		} else if(letztertastendruck === "SS" && relayindex === 1){schaltbefehl = "</i><br>" + i38 + "</a>";
+		} else if(letztertastendruck === "SSS" && relayindex === 1){schaltbefehl = "</i><br>" + i39 + "</a>";
+		} else if(letztertastendruck === "SL" && relayindex === 1){schaltbefehl = "</i><br>" + i310 + "</a>";
+		} else if(letztertastendruck === "LS" && relayindex === 1){schaltbefehl = "</i><br>" + i311 + "</a>";
+		} else if(letztertastendruck === "L" && relayindex === 1){schaltbefehl = "</i><br>" + i312 + "</a>";
+		} else if(letztertastendruck === "S" && relayindex === 2){schaltbefehl = "</i><br>" + i313 + "</a>";
+		} else if(letztertastendruck === "SS" && relayindex === 2){schaltbefehl = "</i><br>" + i314 + "</a>";
+		} else if(letztertastendruck === "SSS" && relayindex === 2){schaltbefehl = "</i><br>" + i315 + "</a>";
+		} else if(letztertastendruck === "SL" && relayindex === 2){schaltbefehl = "</i><br>" + i316 + "</a>";
+		} else if(letztertastendruck === "LS" && relayindex === 2){schaltbefehl = "</i><br>" + i317 + "</a>";
+		} else if(letztertastendruck === "L" && relayindex === 2){schaltbefehl = "</i><br>" + i318 + "</a>";
+		} else {schaltbefehl = "</i><br>n.v.";}
+			if(relayindex >= 0 && relayindex < 3){
+			content += '<div style="width:100%; text-align: center;"><i title="Z&auml;hler: ' + data.inputs[relayindex].event_cnt + '" style="color:#10ff00;">' + data.inputs[relayindex].event + ' ' +  lastsequence + schaltbefehl + '</i></div>';
+			} else {
+			content += canal;
+			}
+		content += "</div>";
+		$('#' + id ).html(content);
+		});
+	});
+	}, millis
+)}
+function Timer(s) {
+ document.getElementById("wieoft").innerHTML=s;
+ s--;
+ if (s > 0) {
+  window.setTimeout('Timer(' + s + ')', 1000);
+ } else {
+ s = Dauer;
+ }
+}
+</script></head><body scroll="auto">
+<table><tr>
+<td><div class="room"><h4><a href="info.htm" target="rechts" title="BedienungInfo">3fach-Taster</a></h4><div id="i3_00" data-type="input" data-relayindex="0" data-canalname="Flur1" data-name="links" data-ip="192.168.178.54"></div></div></td>
+<td><div class="room"><h4>B&uuml;ro</h4><div id="i3_01" data-type="input" data-relayindex="1" data-canalname="Flur2" data-name="mitte" data-ip="192.168.178.54"></div></div></td>
+<td><div class="room"><h4>Fenster</h4><div id="i3_02" data-type="input" data-relayindex="2" data-canalname="Flur3" data-name="rechts" data-ip="192.168.178.54"></div></div></td>
+</tr><tr>
+<td colspan="8"><div class="room"><fieldset><legend>Daten werden nach <span id="wieoft"></span> Sekunden <a href="javascript:location.reload()">aktualisiert</a><iframe src="about:blank" width="0" height="0" name="schalter"></iframe></legend>
+<div style="width:100%; text-align:center;"><table style="width:100%; text-align:center;"><tr><td style="width:100%; text-align:center;"></td></tr></table></div>
+</fieldset></div></td></tr></table>
+<script>
+$( document ).ready(function() {
+loadData();
+Timer(Dauer);
+})
+</script></body></html>
