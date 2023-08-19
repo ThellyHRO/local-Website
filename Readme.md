@@ -147,3 +147,21 @@ three LEDs, I also installed a roller blind control for the SinglePush
 in a Plus 1.
 
 Further information will follow ... (takes a while, my vacation ends tomorrow)
+
+
+Added in relays.htm, roller.htm and lights.htm 2023.08.18
+
+Keyboard shortcut (accesskey) on the icon button, so the
+Mouse does
+not wander up to the icon, only if the accesskey is in the
+mouse info
+wants to be read.
+Of course, this only works with a one-digit ID, which per device
+is
+awarded. With letters as id it should be noted that the
+Browsers also
+use letters in the menu, these have priority.
+Note, the keyboard shortcuts are different depending on the browser:
+IE, Edge, Chrome, Safari, Opera 15+: ALT + accesskey
+Opera (1-14): SHIFT - ESC + accesskey
+Firefox: ALT + SHIFT + accesskey

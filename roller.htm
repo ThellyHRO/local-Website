@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">Rollos verwalten</title><!-- Versions-Monitor: sv 1.13.0.2023.08.01 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
+<!DOCTYPE html><html><head><title id="Tabs">Rollos verwalten</title><!-- Versions-Monitor: sv 1.13.0.2023.08.18 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
 body::-webkit-scrollbar{width:20px;height:20px;}
@@ -135,15 +135,15 @@ function loadData() {
 		content += "<div><nobr>" + linkname + NFW + "</nobr></div>";
 		if(data.rollers[0].state === "stop"){
 			if(RolloPos >= Dauer){
-			content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#ffffff;" class="relay relay-off mdi mdi-window-shutter-open"><big><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
+			content += '<div title=" ' + hinweis + ' accesskey ' + id + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#ffffff;" class="relay relay-off mdi mdi-window-shutter-open"><big accesskey="' + id + '"><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
 			} else {
-			content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#000000;" class="relay relay-off mdi mdi-window-shutter"><big><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
+			content += '<div title=" ' + hinweis + ' accesskey ' + id + ' " style="width:100%; text-align: center;" onclick="RollosFahren(\'' + ip + '\', \'' + richtung + '\');"><i style="color:#000000;" class="relay relay-off mdi mdi-window-shutter"><big accesskey="' + id + '"><b title="% ge&ouml;ffnet">' + RolloPos + '%</b></big></i></div>';
 		}} else {
 	nachOben = Anhalten;
 	nachUnten = Anhalten;
 	richtung = "stop";
 	hinweis = "Fahrt anhalten";
-		content += '<div title=" ' + hinweis + ' " style="width:100%; text-align: center;" onclick="RolloFahrt(\'' + ip + '\', \'stop\');"><i style="color:#f80;" class="relay relay-off mdi mdi-window-shutter-alert"></i></div>';
+		content += '<div title=" ' + hinweis + ' accesskey ' + id + ' " style="width:100%; text-align: center;" onclick="RolloFahrt(\'' + ip + '\', \'stop\');"><i style="color:#f80;" class="relay relay-off mdi mdi-window-shutter-alert"><big accesskey="' + id + '"></big></i></div>';
 		}
 	L1 = data.rollers[0].power;
 	L2 += L1;
