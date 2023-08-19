@@ -137,3 +137,17 @@ habe außer drei LEDs noch eine Rollosteuerung für den SinglePush
 in einen Plus 1 eingebaut.
 
 Weiteres folgt ... (dauert etwas, mein Urlaub endet morgen)
+
+
+Hinzugefügt in relays.htm, roller.htm und lights.htm 2023.08.18
+
+Tastaturkürzel (accesskey) auf der Symbolschaltfläche, somit muss die
+Maus nicht bis zum Symbol wandern, nur wenn der accesskey in der
+Mausinfo gelesen werden will.
+Das funktioniert natürlich nur bei einstelliger id, welche pro Gerät
+vergeben wird. Bei Buchstaben als id sollte beachtet werden, dass der
+Browser ebenfalls Buchstaben im Menü verwendet, diese haben Vorrang.
+Beachten Sie, die Tastaturkürzel unterscheiden sich je nach Browser:
+IE, Edge, Chrome, Safari, Opera 15+: ALT + accesskey
+Opera (1-14): SHIFT - ESC + accesskey
+Firefox: ALT + SHIFT + accesskey
