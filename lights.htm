@@ -274,7 +274,7 @@ function loadData() {
 	else if (data.lights[relayindex].overpower === false)
 	content += "<big style=\"color:#00ffff;\" title=\"kein PowerMetering\">-</big><br>" + SEK;
 	else 
-	content += "<span style=\"color:" + onRGBW + "\" title=\"keine Leistungsabnahme\">&nbsp;&#149;&nbsp;</span><br>" + SEK;
+	content += "<i style=\"color:" + onRGBW + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i><br>" + SEK;
 		content += "<fieldset style='width:88%;'><legend style='text-align:left;'>" + ColorModus + NFW +"</legend></fieldset>";
 		content += "</div>";
 		$('#' + id ).html(content);
