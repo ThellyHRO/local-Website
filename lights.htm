@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.13.1.2023.08.18 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.13.1.2023.08.25 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
@@ -274,7 +274,7 @@ function loadData() {
 	else if (data.lights[relayindex].overpower === false)
 	content += "<big style=\"color:#00ffff;\" title=\"kein PowerMetering\">-</big><br>" + SEK;
 	else 
-	content += "<span style=\"color:#10ff00;\" title=\"keine Leistungsabnahme\">&#149;</span><br>" + SEK;
+	content += "<span style=\"color:" + onRGBW + "\" title=\"keine Leistungsabnahme\">&nbsp;&#149;&nbsp;</span><br>" + SEK;
 		content += "<fieldset style='width:88%;'><legend style='text-align:left;'>" + ColorModus + NFW +"</legend></fieldset>";
 		content += "</div>";
 		$('#' + id ).html(content);
