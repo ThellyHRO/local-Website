@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.13.1.2023.08.25 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.13.1.2023.08.27 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
@@ -72,55 +72,55 @@ let BulbEffekte = [
  '2',
  '3',
 ];
-function BulbDimmen(ip, woc) {
+function BulbDimmen(ip, shellytype, relayindex, woc, ud) {
 dimpos++;
 if (dimsequence.length === dimpos) {
 dimpos = 0;
 };
-fetch('http://' + ip + '/light/0?' + woc + '=' + dimsequence[dimpos])
+fetch('http://' + ip + '/' + shellytype + '/' + relayindex + '?' + woc + '=' + dimsequence[dimpos])
 .then()	
-.catch(err => alert('Dimmen fehlgeschlagen'));
+.catch(err => alert(shellytype + ' Dimmen fehlgeschlagen'));
 };
-function WeissTemp(ip, ud) {
+function WeissTemp(ip, shellytype, ud) {
 weisspos++;
 if (weisstemperatur.length === weisspos) {
 weisspos = 0;
 };
-fetch('http://' + ip + '/light/0?temp=' + weisstemperatur[weisspos])
+fetch('http://' + ip + '/' + shellytype + '/0?temp=' + weisstemperatur[weisspos])
 .then()	
 .catch(err => alert('Weisstemperatur stellen fehlgeschlagen'));
 };
-function DuoTemp(ip, ud) {
+function DuoTemp(ip, shellytype, ud) {
 duopos++;
 if (duotemperatur.length === duopos) {
 duopos = 0;
 };
-fetch('http://' + ip + '/light/0?temp=' + duotemperatur[duopos])
+fetch('http://' + ip + '/' + shellytype + '/0?temp=' + duotemperatur[duopos])
 .then()	
 .catch(err => alert('Weisstemperatur stellen fehlgeschlagen'));
 };
-function EffekteSchalten(ip, ud) {
+function EffekteSchalten(ip, shellytype, ud) {
 effpos++;
 if (BulbEffekte.length === effpos) {
 effpos = 0;
 };
-fetch('http://' + ip + '/light/0?effect=' + BulbEffekte[effpos])
+fetch('http://' + ip + '/' + shellytype + '/0?effect=' + BulbEffekte[effpos])
 .then()	
 .catch(err => alert('Effekte schalten fehlgeschlagen'));
 };
-function ToggleShelly(type, id, ip) {
-fetch('http://' + ip +'/'+ type +'/' + id + '?turn=toggle')
+function ToggleShelly(shellytype, relayindex, ip) {
+fetch('http://' + ip +'/'+ shellytype +'/' + relayindex + '?turn=toggle')
 .then()
 .catch(err => alert('Umschalten hat nicht funktioniert'));
 }
-function Farbwechsel(ip, ud){
+function Farbwechsel(ip, shellytype, ud){
 //	setInterval(function() {
 let Bulb = ip;
 let Bred = Math.round(Math.random() * 255);	// für dunklere Farben etwa 100 als Multiplikator pro Farbe
 let Bgreen = Math.round(Math.random() * 255);
 let Bblue = Math.round(Math.random() * 255);
 let Bbrightness = Math.round(Math.random() * 60); // maximal 100
-fetch('http://' + Bulb + '/light/0?red=' + Bred + '&green=' + Bgreen + '&blue=' + Bblue + 'white=0&gain=' + Bbrightness)
+fetch('http://' + Bulb + '/' + shellytype + '/0?red=' + Bred + '&green=' + Bgreen + '&blue=' + Bblue + 'white=0&gain=' + Bbrightness)
 .then()
 .catch(err => alert('kein ' + Bulb + ' Farbwechsel'));
 //	}, 6000);
@@ -162,6 +162,7 @@ function loadData() {
 		var shellytype = $(this).data('type');
 		var relayindex = $(this).data('relayindex');
 		var id = $(this).attr('id');
+		var hid = "h" + $(this).attr('id');
 		let content = "";
 		fetch('http://' + ip +'/status')
 		.then(response => response.json())
@@ -190,8 +191,12 @@ function loadData() {
 		} else if(Effeckt === 3 && data.meters[relayindex].power < 1){var LichtShow = '<i style="color:#f00;" title="Flash - Blinken' + Effektwechsel + '" class="relay-off mdi mdi-alarm-light-outline"></i>';
 		} else {var LichtShow = '<i style="color:#888;" title="Effects Off - kein Effekt' + Effektwechsel + '" class="relay-off mdi mdi-alarm-light-off-outline"></i>';}
 	var onRGBW = "rgb(" + data.lights[relayindex].red + " " + data.lights[relayindex].green + " " + data.lights[relayindex].blue + ")";
-	var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'white\');\">&#169;</nobr><nobr class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\');\">" + LichtShow + "&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
-	var ColorChange = "<div title=\"Klick f&uuml;r Farbwechsel\" class=\"schalter\" onclick=\"Farbwechsel(\'" + ip + "\');\">";
+		if(shellytype === 'light'){
+		var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'white\');\">&#169;</nobr><nobr class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		} else {
+		var ColorModus = "<big><nobr class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		}
+	var ColorChange = "<div title=\"Klick f&uuml;r Farbwechsel\" class=\"schalter\" onclick=\"Farbwechsel(\'" + ip + "\', \'" + shellytype + "\');\">";
 		if (data.lights[relayindex].timer_remaining === 0) {
 		var SEK = "";
 		} else {
@@ -211,18 +216,22 @@ function loadData() {
 		} else {var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-8"></i>';}
 	var woc = "brightness";
 	var onRGBW = "mode: " + data.lights[relayindex].mode + ", Temp: " + data.lights[relayindex].temp + "K";
-//		Colorbulb-Umschalter im Weissmodus einblenden und bei DUO sowie Dimmer(immer weiss) ausblenden
+//		Colorbulb-Umschalter im Weissmodus einblenden und bei DUO, RGBW2 sowie Dimmer(immer weiss) ausblenden
 		if(typeof data.lights[relayindex].mode !== 'undefined'){
-			if(data.calibrated === true){
-			var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+			if(data.calib_progress >= 1){
+			var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
 			} else {
-		var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'color\');\">&#169;&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+				if(shellytype === 'light'){
+				var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'color\');\">&#169;&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+				} else {
+				var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+				}
 			}
 		} else {
-		var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
 		};
 	if(data.lights[relayindex].temp >2699){
-	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatur\" class=\"schalter\" onclick=\"DuoTemp(\'" + ip + "\');\">";
+	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatut\" class=\"schalter\" onclick=\"DuoTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
 	} else {
 	var ColorChange = "";
 	}
@@ -248,7 +257,7 @@ function loadData() {
 	}
 		content += "<div>" + linkname + "</div>";
 		if(data.lights[relayindex].ison == true)
-			if(id < 5)
+			if(id > 0 && id < 5)
 		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 4 && id < 8)
@@ -259,6 +268,12 @@ function loadData() {
 			else
 			if(id == 9)
 		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
+			else
+			if(id == 0)
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
+			else
+			if(id > 11 && id < 18)
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
 			else
 		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="Ausschalten accesskey ' + id + '" style="color:#ffffff;" class="relay relay-off mdi mdi-lightbulb-on-outline"><big accesskey="' + id + '"></big></i></div>';
 		else
@@ -271,7 +286,7 @@ function loadData() {
 	L4 = L2.toFixed(0);
 	if (data.meters[relayindex].power > 0)
 	content += ColorChange + "<nobr style=\"background-color:rgb(" + data.lights[relayindex].red + " " + data.lights[relayindex].green + " " + data.lights[relayindex].blue + "); color:rgb(" + Rk + " " + Gk + " " + Bk + ");\">&nbsp;" + data.meters[relayindex].power + "W " + Helligkeit + "%&nbsp;</nobr><br>" + SEK + EndColorChange;
-	else if (data.lights[relayindex].overpower === false)
+	else if (data.lights.overpower === false)
 	content += "<big style=\"color:#00ffff;\" title=\"kein PowerMetering\">-</big><br>" + SEK;
 	else 
 	content += "<i style=\"color:" + onRGBW + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i><br>" + SEK;
@@ -295,20 +310,26 @@ function Timer(s) {
  }
 }
 </script></head><body scroll="auto">
-<table><tr>
+<table><tr><!-- For RGBW2 dara-type = color or white and data-relayindex = 0-3 -->
 <td><div class="room"><h4><a href="4fachTasterArbeitszimmer.png" target="rechts" title="BedienungInfo">B&uuml;ro</a></h4><div id="1" data-consumption="true" data-type="light" data-relayindex="0" data-name="Sonne" data-ip="192.168.178.101"></div></div></td>
 <td><div class="room"><h4>B&uuml;ro</a></h4><div id="2" data-consumption="true" data-type="light" data-relayindex="0" data-name="Mond" data-ip="192.168.178.102"></div></div></td>
 <td><div class="room"><h4>B&uuml;ro</a></h4><div id="3" data-consumption="true" data-type="light" data-relayindex="0" data-name="Mars" data-ip="192.168.178.103"></div></div></td>
 <td><div class="room"><h4>B&uuml;ro</a></h4><div id="4" data-consumption="true" data-type="light" data-relayindex="0" data-name="Venus" data-ip="192.168.178.104"></div></div></td>
+<td><div class="room"><h4>Bad</a></h4><div id="0" data-consumption="true" data-type="color" data-relayindex="0" data-name="LED-Strip" data-ip="192.168.178.93"></div></div></td>
 </tr><tr>
 <td><div class="room"><h4><a href="4fachTasterWohnzimmer.png" target="rechts" title="BedienungInfo">WZ</a></h4><div id="5" data-consumption="true" data-type="light" data-relayindex="0" data-name="Erde" data-ip="192.168.178.105"></div></div></td>
 <td><div class="room"><h4>WZ</a></h4><div id="6" data-consumption="true" data-type="light" data-relayindex="0" data-name="Saturn" data-ip="192.168.178.106"></div></div></td>
 <td><div class="room"><h4>WZ</a></h4><div id="7" data-consumption="true" data-type="light" data-relayindex="0" data-name="Merkur" data-ip="192.168.178.107"></div></div></td>
 <td><div class="room"><h4>Au&szlig;entreppe</h4><div id="8" data-consumption="true" data-type="light" data-relayindex="0" data-name="Uranus" data-ip="192.168.178.108"></div></div></td>
 <td><div class="room"><h4>Nachttisch</a></h4><div id="9" data-consumption="true" data-type="light" data-relayindex="0" data-name="Jupiter" data-ip="192.168.178.109"></div></div></td>
-<!-- td><div class="room"><h4>G125</h4><div id="10" data-consumption="true" data-type="light" data-relayindex="0" data-name="Vintage" data-ip="192.168.178.119"></div></div></td>
-<td><div class="room"><h4>Reserve</h4><div id="11" data-consumption="true" data-type="light" data-relayindex="0" data-name="Dimmer" data-ip="192.168.178.100"></div></div></td -->
-</tr><tr>
+</tr><!-- tr>
+<td><div class="room"><h4>G125</h4><div id="10" data-consumption="true" data-type="light" data-relayindex="0" data-name="Vintage" data-ip="192.168.178.119"></div></div></td>
+<td><div class="room"><h4>Reserve</h4><div id="11" data-consumption="true" data-type="light" data-relayindex="0" data-name="Dimmer" data-ip="192.168.178.100"></div></div></td>
+<td><div class="room"><h4>Reserve</h4><div id="12" data-consumption="true" data-type="white" data-relayindex="0" data-name="LED-Strip 1" data-ip="192.168.178.93"></div></div></td>
+<td><div class="room"><h4>Reserve</h4><div id="13" data-consumption="true" data-type="white" data-relayindex="1" data-name="LED-Strip 2" data-ip="192.168.178.93"></div></div></td>
+<td><div class="room"><h4>Reserve</h4><div id="14" data-consumption="true" data-type="white" data-relayindex="2" data-name="LED-Strip 3" data-ip="192.168.178.93"></div></div></td>
+<td><div class="room"><h4>Reserve</h4><div id="15" data-consumption="true" data-type="white" data-relayindex="3" data-name="LED-Strip 4" data-ip="192.168.178.93"></div></div></td>
+</tr --><tr>
 <td colspan="8"><div class="room"><fieldset><legend>Daten werden nach <span id="wieoft"></span> Sekunden <a href="javascript:location.reload()">aktualisiert</a><iframe src="about:blank" width="0" height="0" name="schalter"></iframe></legend>
 <!-- big style="color:#ff0000">&#149; </big><small style="color:#ffff00">keine LeistungsAbnahme</small> &#149; <big style="color:#00ffff">- </big><small style="color:#00ffff">keine LeistungsMessung</small><br -->
 <div style="width:100%; text-align:center;"><table style="width:100%; text-align:center;"><tr><td style="width:50%; text-align:right;"><big id="Alles" style="color:#10ff00"></big></td><td style="width:50%; text-align:left;"><b><big style="color:#10ff00">Watt</big></b></td></tr></table></div>
