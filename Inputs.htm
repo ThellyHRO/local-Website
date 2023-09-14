@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">Inputs anzeigen</title><!-- Versions-Monitor: sv 1.13.0.2023.07.14 --><base target="schalter"><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
+<!DOCTYPE html><html><head><title id="Tabs">Inputs anzeigen</title><!-- Versions-Monitor: sv 1.14.0.2023.09.14 --><base target="schalter"><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
 body::-webkit-scrollbar{width:20px;height:20px;}
@@ -83,7 +83,7 @@ function loadData() {
 	if(FWN === FWO){
 	NFW = "";
 	} else if(relayindex === 0){
-	NFW = "<span style='color:#ff0' title='" + name + " nicht mit Internet verbunden oder &#10;&#10; neue Firmware vorhanden: " + FWN + "&#10;Klick f&uuml;r Update, nur wenn NEUE Version in der Info angezeigt wird'><a href='http://" + ip + "/ota?update=1' target='schalter'> <i style='color:#FFFF00;' class='relay-off mdi mdi-rotate-3d-variant'></i></a></span>";
+	NFW = "<span style='color:#ff0' title='" + name + " nicht mit Internet verbunden oder &#10;&#10; neue Firmware vorhanden: " + FWN + "&#10;Klick f&uuml;r Update, nur wenn NEUE Version in der Info angezeigt wird'><a href='http://" + ip + "/ota?update=1' target='schalter'> <i style='color:#FFFF00;' class='relay-off mdi mdi-rotate-3d-variant'> >O<</i></a></span>";
 	}
 	if(relayindex === 1){
 	Uhrzeit = "<small style='color:#0ff' title='aktuelle Uhrzeit'>&nbsp;" + Zeit + "</small>";
