@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.13.1.2023.08.27 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.14.0.2023.09.16 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
@@ -131,6 +131,9 @@ fetch('http://' + ip + '/settings?mode=' + ud)
 .then()
 .catch(err => alert('FarbModus' + ud + ' nicht gewechselt'));
 }
+function rgbToHex(r, g, b) {
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
 function fuehrendeNull(wert) {
   if (wert < 10) return "0" + parseInt(wert);
   else return parseInt(wert);
@@ -171,6 +174,11 @@ function loadData() {
 	var Rk = 255-data.lights[relayindex].red;
 	var Gk = 255-data.lights[relayindex].green;
 	var Bk = 255-data.lights[relayindex].blue;
+	var Rh = data.lights[relayindex].red;
+	var Gh = data.lights[relayindex].green;
+	var Bh = data.lights[relayindex].blue;
+	var Schriftfarbe = rgbToHex(Rk, Gk, Bk);
+	var Hintergrundfarbe = rgbToHex(Rh, Gh, Bh);
 	if (data.lights[relayindex].mode === 'color'){
 	var Helligkeit = data.lights[relayindex].gain;
 		if(Helligkeit < 4){var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-outline"></i>';
@@ -258,19 +266,19 @@ function loadData() {
 		content += "<div>" + linkname + "</div>";
 		if(data.lights[relayindex].ison == true)
 			if(id > 0 && id < 5)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 4 && id < 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 9)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 0)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 11 && id < 18)
 		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
@@ -285,11 +293,11 @@ function loadData() {
 	L3 = L2.toFixed(2);
 	L4 = L2.toFixed(0);
 	if (data.meters[relayindex].power > 0)
-	content += ColorChange + "<nobr style=\"background-color:rgb(" + data.lights[relayindex].red + " " + data.lights[relayindex].green + " " + data.lights[relayindex].blue + "); color:rgb(" + Rk + " " + Gk + " " + Bk + ");\">&nbsp;" + data.meters[relayindex].power + "W " + Helligkeit + "%&nbsp;</nobr><br>" + SEK + EndColorChange;
+	content += ColorChange + "<nobr style=\"background-color:" + Hintergrundfarbe + "; color:" + Schriftfarbe + ";\">&nbsp;" + data.meters[relayindex].power + "W " + Helligkeit + "%&nbsp;</nobr><br>" + SEK + EndColorChange;
 	else if (data.lights.overpower === false)
 	content += "<big style=\"color:#00ffff;\" title=\"kein PowerMetering\">-</big><br>" + SEK;
 	else 
-	content += "<i style=\"color:" + onRGBW + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i><br>" + SEK;
+	content += "<i style=\"color:" + Hintergrundfarbe + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i><br>" + SEK;
 		content += "<fieldset style='width:88%;'><legend style='text-align:left;'>" + ColorModus + NFW +"</legend></fieldset>";
 		content += "</div>";
 		$('#' + id ).html(content);
