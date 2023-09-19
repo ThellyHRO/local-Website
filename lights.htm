@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.14.0.2023.09.16 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.14.0.2023.09.19 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
@@ -180,6 +180,7 @@ function loadData() {
 	var Schriftfarbe = rgbToHex(Rk, Gk, Bk);
 	var Hintergrundfarbe = rgbToHex(Rh, Gh, Bh);
 	if (data.lights[relayindex].mode === 'color'){
+	var Leuchtmittelfarbe = Hintergrundfarbe;
 	var Helligkeit = data.lights[relayindex].gain;
 		if(Helligkeit < 4){var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-outline"></i>';
 		} else if(Helligkeit > 3 && Helligkeit < 23){var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-1"></i>';
@@ -224,6 +225,7 @@ function loadData() {
 		} else {var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-8"></i>';}
 	var woc = "brightness";
 	var onRGBW = "mode: " + data.lights[relayindex].mode + ", Temp: " + data.lights[relayindex].temp + "K";
+	var Leuchtmittelfarbe = "#ffffff";
 //		Colorbulb-Umschalter im Weissmodus einblenden und bei DUO, RGBW2 sowie Dimmer(immer weiss) ausblenden
 		if(typeof data.lights[relayindex].mode !== 'undefined'){
 			if(data.calib_progress >= 1){
@@ -266,19 +268,19 @@ function loadData() {
 		content += "<div>" + linkname + "</div>";
 		if(data.lights[relayindex].ison == true)
 			if(id > 0 && id < 5)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 4 && id < 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 9)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 0)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Hintergrundfarbe + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 11 && id < 18)
 		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
