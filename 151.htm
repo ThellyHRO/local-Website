@@ -1,0 +1,120 @@
+<!DOCTYPE html><html><head><title>Shelly Rauchmelder Prüfung</title><!-- Versions-Monitor: sv 1.0.2023.10.01 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache"><script>
+var ip = "192.168.178.151";
+var ort = "Schlafzimmer";
+setInterval(
+  function() {
+	document.getElementById("smoke1").innerHTML = "<b class=\"stop\">Offline, dr&uuml;cke 3x kurz die Bedientaste im " + ort + "</b>";
+	let socket = new WebSocket("ws://" + ip + "/rpc");
+	socket.onopen = function (e) {
+	socket.send('{"id":1, "src":"user_1", "method":"Shelly.GetStatus"}');
+	};
+	socket.onmessage = function (event) {
+	let message = event.data;
+//	console.log("WebSocket message received:", message);
+	obj = JSON.parse(event.data);
+	if (obj.result !== undefined) {
+		if (obj.result['smoke:0'].alarm === false)
+	document.getElementById("smoke1").innerHTML = "<b class=\"on\" > Online, WLAN des Rauchmelders im " + ort + " gefunden</b>";
+	document.getElementById("zimmer").innerHTML = ort;
+	document.getElementById("device").innerHTML = obj.result['sys'].mac;
+	document.getElementById("unix").innerHTML = obj.result['sys'].time;
+	document.getElementById("batterie").innerHTML = obj.result['devicepower:0'].battery.V + " Volt " + obj.result['devicepower:0'].battery.percent + "%";
+	document.getElementById("Ausfall").innerHTML = "Nein";
+	document.getElementById("schmutzig").innerHTML = "Nein";
+	document.getElementById("Schmutzgrad").innerHTML = 0;
+	document.getElementById("temp").innerHTML = "nicht vorhanden";
+	document.getElementById("chip").innerHTML = "Nein";
+	document.getElementById("werkstest").innerHTML = "Nein";
+	document.getElementById("erfolg").innerHTML = "Test erfolgreich";
+	document.getElementById("sign").innerHTML = "Unterschrift";
+	document.getElementById("printer").innerHTML = "<a href=\"javascript:window.print();\" target=\"_self\" class=\"nichtdrucken\" title=\"diese Seite Drucken\">&#149; Diese Seite drucken &#149;</a>";
+	}}
+  }, 5000)
+</script><script>
+'use strict';
+
+(function () {
+
+	function uhrzeit() {
+
+		var jetzt = new Date(),
+
+		h = jetzt.getHours(),
+
+		m = jetzt.getMinutes(),
+
+		s = jetzt.getSeconds(),
+
+		j = jetzt.getFullYear(),
+		o = jetzt.getMonth()+1,
+		t = jetzt.getDate(),
+		d = jetzt.getDay(),
+		n = jetzt.getMonth();
+	if(d === 0){d = "Sonntag";
+	} else if(d === 1){d = "Montag";
+	} else if(d === 2){d = "Dienstag";
+	} else if(d === 3){d = "Mittwoch";
+	} else if(d === 4){d = "Donnerstag";
+	} else if(d === 5){d = "Freitag";
+	} else if(d === 6){d = "Samstag";
+	} else {d = "Sonnabend";}
+	if(n === 0){n = "Januar";
+	} else if(n === 1){n = "Februar";
+	} else if(n === 2){n = "M&auml;rz";
+	} else if(n === 3){n = "April";
+	} else if(n === 4){n = "Mai";
+	} else if(n === 5){n = "Juni";
+	} else if(n === 6){n = "Juli";
+	} else if(n === 7){n = "August";
+	} else if(n === 8){n = "September";
+	} else if(n === 9){n = "Oktober";
+	} else if(n === 10){n = "November";
+	} else if(n === 11){n = "Dezember";
+	} else {n = "Schaltmonat";}
+		h = fuehrendeNull(h);
+
+		m = fuehrendeNull(m);
+
+		s = fuehrendeNull(s);
+
+		o = fuehrendeNull(o);
+
+		t = fuehrendeNull(t);
+
+		let Jahr = j + 1;
+		document.getElementById('heute').innerHTML = t + '.' + o + '.' + j;
+
+		document.getElementById('neuesDatum').innerHTML = n + ' ' + Jahr;
+
+		setTimeout(uhrzeit, 500);
+
+	}
+function fuehrendeNull(zahl) {
+	zahl = (zahl < 10 ? '0' : '') + zahl;
+
+		return zahl;
+
+	}
+
+	document.addEventListener('DOMContentLoaded', uhrzeit);
+
+}());
+
+</script><style rel="stylesheet" type="text/css">
+@media screen {
+*{font-family:Avant Garde, verdana, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
+body{margin:0; border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
+table{vertical-align:top;margin:0;height:1%;}
+.on{background-color:lime;color:black;}
+.stop{background-color:white;color:red;}
+.off{background-color:tomato;color:white;}
+a:hover{color:white;position:relative;right:1px;top:1px;text-decoration:none;}
+}
+@media print {
+.nichtdrucken{display:none;color:white;}
+}
+</style></head><body scroll="auto"><h2><span class="nichtdrucken" id="smoke1"><b title="Offline" class="stop">Offline, dr&uuml;cke 3x kurz die Bedientaste</b></span></h2><table border="0"><tr><td colspan="2" align="center"><h2>Rauchmelderprüfung</h2></td></tr><tr><td>Zimmer</td><td id="zimmer">wo</td></tr><tr><td>Ger&auml;te-ID<br>DIN 14676</td><td id="device">welche</td></tr><tr><td>Prüf-Zeitpunkt</td><td id="unix">wann</td></tr><tr><td>nächste Prüfung</td><td id="neuesDatum">date+365d</td></tr>
+<tr><td>Nutzung des Raums gleich (z. B. Wohnzimmer wurde zum Schlafzimmer)?</td><td><input type="radio" name="1" checked> Ja <input type="radio" name="1"> Nein</td></tr><tr><td>Raum baulich unveraendert?</td><td><input type="radio" name="2" checked> Ja <input type="radio" name="2"> Nein</td></tr><tr><td>Keine Hindernisse in der Umgebung von 0,5 m?</td><td><input type="radio" name="3" checked> Ja <input type="radio" name="3"> Nein</td></tr><tr><td>Raucheindringöffnungen frei?</td><td><input type="radio" name="4" checked> Ja <input type="radio" name="4"> Nein</td></tr>
+<tr><td colspan="2"><b>Funktionsprüfung</b></td></tr><tr><td>Batterie schwach (Spannung)</td><td id="batterie">gute Frage</td></tr><tr><td>Ausfall der Rauchkammer</td><td id="Ausfall"></td></tr><tr><td>Rauchkammer verschmutzt</td><td id="schmutzig"></td></tr><tr><td>Verschmutzungsgrad</td><td id="Schmutzgrad"></td></tr><tr><td>Fehler des Temperatursensors</td><td id="temp"></td></tr><tr><td>Fehler im Funkchip</td><td id="chip"></td></tr><tr><td>Datenfehler (Werkstest fehlgeschlagen)</td><td id="werkstest"></td></tr><tr></td><td><td id="erfolg">Test noch nicht fertig</tr><tr><td></td></tr>
+<tr><td id="heute">01.10.2023</td><td id="sign"></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td colspan="2" id="printer" align="center"></td></tr>
+</table></body></html>
