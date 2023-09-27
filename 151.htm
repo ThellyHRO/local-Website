@@ -32,19 +32,12 @@ setInterval(
   }, 5000)
 </script><script>
 'use strict';
-
 (function () {
-
 	function uhrzeit() {
-
-		var jetzt = new Date(),
-
+		var jetzt = new Date(),
 		h = jetzt.getHours(),
-
 		m = jetzt.getMinutes(),
-
 		s = jetzt.getSeconds(),
-
 		j = jetzt.getFullYear(),
 		o = jetzt.getMonth()+1,
 		t = jetzt.getDate(),
@@ -72,34 +65,21 @@ setInterval(
 	} else if(n === 11){n = "Dezember";
 	} else {n = "Schaltmonat";}
 		h = fuehrendeNull(h);
-
 		m = fuehrendeNull(m);
-
 		s = fuehrendeNull(s);
-
 		o = fuehrendeNull(o);
-
 		t = fuehrendeNull(t);
-
 		let Jahr = j + 1;
 		document.getElementById('heute').innerHTML = t + '.' + o + '.' + j;
-
 		document.getElementById('neuesDatum').innerHTML = n + ' ' + Jahr;
-
 		setTimeout(uhrzeit, 500);
-
 	}
 function fuehrendeNull(zahl) {
 	zahl = (zahl < 10 ? '0' : '') + zahl;
-
 		return zahl;
-
 	}
-
 	document.addEventListener('DOMContentLoaded', uhrzeit);
-
 }());
-
 </script><style rel="stylesheet" type="text/css">
 @media screen {
 *{font-family:Avant Garde, verdana, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
