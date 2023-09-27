@@ -10,7 +10,6 @@ setInterval(
 	};
 	socket.onmessage = function (event) {
 	let message = event.data;
-//	console.log("WebSocket message received:", message);
 	obj = JSON.parse(event.data);
 	if (obj.result !== undefined) {
 		if (obj.result['smoke:0'].alarm === false)
