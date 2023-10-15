@@ -1,0 +1,11 @@
+Um den Script im Gen.2-Gerät zu starten, bietet sich an, im RGBW2 dem
+1.Kanal beim Einschalten den ScriptStart-Befehl zu verpassen (bei Output switched On URL):
+
+http://192.168.178.222/rpc/Script.Start?id=4
+
+Und natürlich kann der Script auch gestopt werden, praktischerweise beim
+2.Kanal im Ausschaltbefehl (Output switched Off URL):
+
+http://192.168.178.222/rpc/Script.Stop?id=4
+
+Die IP ist an das Gen.2-Gerät und die Ziffer der Script-ID ist anzupassen.
