@@ -97,7 +97,7 @@ duopos = 0;
 };
 fetch('http://' + ip + '/' + shellytype + '/0?temp=' + duotemperatur[duopos])
 .then()	
-.catch(err => alert('Weisstemperatur stellen fehlgeschlagen'));
+.catch(err => alert('Weisstemperatur der DUO stellen fehlgeschlagen'));
 };
 function EffekteSchalten(ip, shellytype, ud) {
 effpos++;
@@ -240,8 +240,10 @@ function loadData() {
 		} else {
 		var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
 		};
-	if(data.lights[relayindex].temp >2699){
-	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatut\" class=\"schalter\" onclick=\"DuoTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
+	if(typeof data.lights[relayindex].red !== 'undefined'){
+	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatur\" class=\"schalter\" onclick=\"WeissTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
+	} else if(data.lights[relayindex].temp > 2699){
+	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatur\" class=\"schalter\" onclick=\"DuoTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
 	} else {
 	var ColorChange = "";
 	}
