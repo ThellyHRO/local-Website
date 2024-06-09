@@ -15,14 +15,14 @@
  * 
  * > The order of the execution of the urls can't be guaranteed
  * 
- * Statt URL-Befehl bei SinglePush eine Rollo-Steuerung eingefügt. Anzupassen ist an jeder Stelle die IP 192.168.178.78 in die eigene.
+ * Instead of a URL command, a roller blind control has been added to SinglePush. The IP must be adjusted to your own at each point.
  * 
  */
 
 /** =============================== CHANGE HERE =============================== */
-let ip = '192.168.178.78';
+let ip = '192.168.178.78'; // 'localhost' during installation Shelly Plus 2PM Cover-Mode
 let CONFIG = {
-    bluButtonAddress: "5c:c7:c1:f7:18:9c", // KLEINBUCHSTABEN! blau 90:39:5e:0c:b4:cd
+    bluButtonAddress: "5c:c7:c1:f7:18:9c", // KLEINBUCHSTABEN!
     actions: {
         singlePush: [
             "http://192.168.178.78/roller/0"
