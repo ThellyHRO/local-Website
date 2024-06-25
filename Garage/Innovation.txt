@@ -1,0 +1,75 @@
+(English below)
+Meine externe Garage mit Toröffnung und Lichtsteuerung ohne direktem Internetzugang.
+Die Funktionen arbeiten über lokalen AccessPoint oder auch, wenn mein Smartphone den mobilen Hotspot bereitstellt im gemeinsamen Netzwerk.
+
+Früher hatte ich zur Toröffnung den "BT-Scanner von Pilot IOT Systems" verwendet, welcher wirklich gut funktioniert, wenn man das Smartphone einstecken hat.
+Nur störte mich, dass das Tor auch aufging, wenn ich nur an der Garage vorbei lief und gar nicht rein wollte.
+Jetzt startet er nicht mehr das Rollo-Relay direkt, sondern startet oder stoppt er lediglich den Rolloscript
+http://192.168.xxx.xxx/rpc/Script.Start?id={script_ID}
+https://github.com/ThellyHRO/local-Website/blob/main/Roller-BLU-Button.js
+Nun kann ich mit dem BLU-Button und SinglePush das Tor einfach bedienen, am Motorrad mit der wetterfesten Tough-Version.
+Mit den anderen Push-Varianten des Button schalte ich ggf. auch das Licht.
+Für die Einfahrzeit reicht mir allerdings auch das zeitgesteuerte Rollo-Ampel-Licht, beim Öffnen grün, bei Durchfahrt durch die Lichtschranke gelb und das Rollo stopt, bei vollständiger Öffnung weiss. Beim Schließen blinkt es übrigens rot.
+
+Die Beleuchtung der Garage besteht aus 6 Leuchten, die für je 2 Leuchtstoffröhren á 36 Watt ausgelegt sind. Ursprünglich nur
+mit einem Serienschalter getrennt wurden je 3 Leuchten links oder rechts geschalten, dies bedeutet 6x 36W links oder rechts.
+Die Leuchtstoffröhren sind inklusive Vorschaltgerät rausgeflogen und LED-Röhren reingesetzt, nun also 12x 12 Watt.
+Das entspricht aber immer noch viel zuviel Licht, um nur ein Fahrzeug abzustellen oder herauszuholen.
+Also Serienschalter weg und 4-fach-Taster mit Shelly i4 rein und in die Leuchten je ein Shelly 2.5, der entweder die obere oder untere Röhre schaltet.
+Am 4-fach-Taster habe ich nun die Möglichkeit die oberen oder unteren Röhren, links oder rechts anzusteuern, es gibt ja 16 Möglichkeiten am i4.
+So geht nur eine Röhre bei SinglePush An/Aus, zwei Röhren bei DoublePush oder drei Röhren bei TriplePush und dies jeweils obere oder untere Röhrenreihe links oder rechts.
+Mit LongPush ist das Ausschalten der Leuchten belegt, also alles noch merkbar und je nach Menge des nötigen Lichts schaltbar.
+Als 4-fach-Taster habe ich den von Gira verwendet, da er sehr bedienfreundlich ist und ich ihn mit dem i4 schon mehrfach installiert habe, auch in Jalousie-Steuerungen.
+
+Weitere Beleuchtungen in der Garage (aber auch zu Hause) sind Tischleuchten, deren Schnurschalter ich durch den Shelly Button getauscht habe, welcher urprünglich für den Shelly 1 oder 1PM bereitgestellt wurde.
+Diesen Button gibt es allerdings nicht mehr (bei mir im Lager sind noch wenige) und die Mini passen da auch super rein. Eventuell baut Shelly auch einen Nachfolger direkt für die Mini 1 oder 1PM?
+Bei mir sind Shelly Plus 1 mini reingewachsen, welche mit Script Shelly Duo RGBW schalten.
+https://github.com/ThellyHRO/local-Website/blob/main/led-color.js
+SinglePush = An/Aus + ColorMode
+DoublePush = Farbwechsel
+TriplePush = WhiteMode
+LongPush = Dimmstufe wechseln (derzeit nur im ColorMode)
+
+Auch mein Mini-Shelly-Lager wird extra beleuchtet mit einem RGBWW-Strip. Für die zwei White (Cool-&WarmWhite) musste ich allerdings einen 2. RGBW2 im Weissmodus benutzen, leider hat auch der neue Plus RGBW PM nur einen Weisskanal.
+Angesteuert werden die zwei RGBW2 im Moment von einem i4-Button (nur An/Aus), der allerdings noch keinen Script zum Dimmen oder einen Farbwechsel beinhaltet. Bei gelegentlicher Bastelmuse schreib ich ggf. mal einen Script, um auch den i4 auszulasten ;)
+Weil wir gerade beim i4 sind, auf meiner Github-Webseite sind zwei i4-Button Dateien, die HTM-Datei kann nach anpassen der IP auf jedem Anzeige-Gerät gespeichert und als Fernbedienung des i4 genutzt werden.
+Die JS-Datei ist eine etwas reduziete Version, die auf jedem scriptfähigen Gen.2/3-Gerät gespeichert werden kann, der Aufruf im Browser ist http://<Shelly_IP>/script/<script_id>/i4trigger und dann ist die Fernbedienung von da vorhanden.
+
+
+(English)
+
+My external garage with door opening and light control without direct internet access.
+The functions work via local access point or, if my smartphone provides the mobile hotspot in the shared network.
+
+I used to use the "BT scanner from Pilot IOT Systems" to open the door, which works really well if you have the smartphone plugged in.
+The only thing that bothered me was that the door opened even if I just walked past the garage and didn't want to go in at all.
+Now it no longer starts the roller blind relay directly, but only starts or stops the roller blind script
+http://192.168.xxx.xxx/rpc/Script.Start?id={script_ID}
+https://github.com/ThellyHRO/local-Website/blob/main/Roller-BLU-Button.js
+Now I can easily operate the gate with the BLU button and SinglePush, on the motorcycle with the weatherproof Tough version.
+With the other push variants of the button I can also switch the lights if necessary.
+However, for the retraction time, the time-controlled blind traffic light is enough for me: green when opening, yellow when passing through the light barrier and the blind stops, white when fully opened. By the way, it flashes red when closing.
+
+The lighting in the garage consists of 6 lights, each designed for 2 fluorescent tubes of 36 watts. Originally only
+3 lights were switched on the left or right with a series switch, which means 6x 36W on the left or right.
+The fluorescent tubes were thrown out including the ballast and LED tubes were put in, so now 12x 12 watts.
+But that still corresponds to far too much light to park or take out just one vehicle.
+So I removed the series switch and put in the 4-way button with Shelly i4 and put a Shelly 2.5 in each light, which switches either the upper or lower tube.
+With the 4-way button I now have the option of controlling the upper or lower tubes, left or right, there are 16 options on the i4.
+So only one tube can be switched on/off with SinglePush, two tubes with DoublePush or three tubes with TriplePush and this is the upper or lower row of tubes on the left or right.
+With LongPush the lights are switched off, so everything is still noticeable and can be switched depending on the amount of light required.
+I used the Gira 4-way button because it is very user-friendly and I have already installed it several times with the i4, including in blind controls.
+
+Other lighting in the garage (but also at home) are table lamps whose cord switch I replaced with the Shelly Button, which was originally provided for the Shelly 1 or 1PM.
+This button is no longer available and the Mini fits in perfectly. Maybe Shelly will also build a successor directly for the Mini 1 or 1PM?
+I have Shelly Plus 1 mini, which switch with the Shelly Duo RGBW script.
+https://github.com/ThellyHRO/local-Website/blob/main/led-color.js
+SinglePush = On/Off + ColorMode
+DoublePush = Color change
+TriplePush = WhiteMode
+LongPush = Change dimming level (currently only in ColorMode)
+
+My Mini Shelly warehouse is also specially illuminated with an RGBWW strip. For the two whites (cool & warm white) I had to use a second RGBW2 in white mode, unfortunately the new Plus RGBW PM only has one white channel.
+The two RGBW2 are currently controlled by an i4 button (only on/off), which does not yet contain a script for dimming or changing the color. If I get the occasional tinkering feeling, I might write a script to utilize the i4 as well ;)
+Since we're talking about the i4, there are two i4 button files on my Github website. The HTM file can be saved on any display device after adjusting the IP and used as a remote control for the i4.
+The JS file is a slightly reduced version that can be saved on any scriptable Gen.2/3 device. The call in the browser is http://<Shelly_IP>/script/<script_id>/i4trigger and then the remote control is available from there.
