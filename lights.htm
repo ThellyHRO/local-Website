@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.14.0.2023.09.19 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<!DOCTYPE html><html><head><title id="Tabs">LED's verwalten</title><!-- Versions-Monitor: sv 1.14.0.2025.06.20 --><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous" /><style type="text/css" media="all">
 *{font-family:Avant Garde, verdana, Magneto, Comic Sans MS, arial,sans-serif,Times New Roman,serif; list-style:none; color:rgb(245,245,245);}
 body{margin:0;border:0; scrollbar-width: auto; scrollbar-color: rgb(0,0,0) rgb(245,245,245); color: rgb(245,245,245); background-color: #37474f; display:flex; flex-flow:row wrap; font-size:10pt;}
@@ -30,9 +30,14 @@ a:hover{color:white;position:relative;right:1px;top:1px;text-decoration:none;}
 a{color:#ffffff;text-decoration:none;}
 ol{margin:0;}
 legend, ul, ol{white-space:nowrap;}
+big{font-size:1em;}
+.slidecontainer{width: 100%;}
+.slider{width: 100%; height: 3px; accent-color: #00ffff; background-color: #ffff00; outline: none; opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s;}
+.slider:hover{opacity: 2;}
 </style><script>
-let Dauer = 5; // aller wieviel Sekunden soll neu gelesen werden?
-let dimpos = 0;
+let Dauer = 5;		// aller wieviel Sekunden soll neu gelesen werden?
+let minimumdimmer = 1;	// Schieberegler Minimum, normal = 1, auch 0 (außer bei Dimmer) möglich und schaltet die Leuchte Aus
+let dimpos = 0;		// Startpositionen der Dimm- und Farbwerte, 0 entspricht dem ersten Wert
 let effpos = 0;
 let duopos = 0;
 let weisspos = 0;
@@ -108,13 +113,17 @@ fetch('http://' + ip + '/' + shellytype + '/0?effect=' + BulbEffekte[effpos])
 .then()	
 .catch(err => alert('Effekte schalten fehlgeschlagen'));
 };
+function lichtaus(shellytype, relayindex, ip) {
+fetch('http://' + ip +'/'+ shellytype +'/' + relayindex + '?turn=off')
+.then()
+.catch(err => alert('Umschalten hat nicht funktioniert'));
+}
 function ToggleShelly(shellytype, relayindex, ip) {
 fetch('http://' + ip +'/'+ shellytype +'/' + relayindex + '?turn=toggle')
 .then()
 .catch(err => alert('Umschalten hat nicht funktioniert'));
 }
 function Farbwechsel(ip, shellytype, ud){
-//	setInterval(function() {
 let Bulb = ip;
 let Bred = Math.round(Math.random() * 255);	// für dunklere Farben etwa 100 als Multiplikator pro Farbe
 let Bgreen = Math.round(Math.random() * 255);
@@ -123,7 +132,18 @@ let Bbrightness = Math.round(Math.random() * 60); // maximal 100
 fetch('http://' + Bulb + '/' + shellytype + '/0?red=' + Bred + '&green=' + Bgreen + '&blue=' + Bblue + 'white=0&gain=' + Bbrightness)
 .then()
 .catch(err => alert('kein ' + Bulb + ' Farbwechsel'));
-//	}, 6000);
+}
+function laufenderFarbwechsel(ip, shellytype, ud){
+setInterval(function() {
+let Bulb = ip;
+let Bred = Math.round(Math.random() * 222);	// für dunklere Farben etwa 100 als Multiplikator pro Farbe
+let Bgreen = Math.round(Math.random() * 222);
+let Bblue = Math.round(Math.random() * 222);	// maximal 255
+let Bbrightness = Math.round(Math.random() * 88); // maximal 100
+fetch('http://' + Bulb + '/' + shellytype + '/0?red=' + Bred + '&green=' + Bgreen + '&blue=' + Bblue + 'white=0&gain=' + Bbrightness)
+.then()
+.catch(err => alert('kein ' + Bulb + ' Farbwechsel'));
+}, 6000);
 // kein Link für TimerStop verbaut, Seite Neuladen stoppt den Timer, falls aktiviert
 }
 function BulbModus(ip, ud){
@@ -165,7 +185,7 @@ function loadData() {
 		var shellytype = $(this).data('type');
 		var relayindex = $(this).data('relayindex');
 		var id = $(this).attr('id');
-		var hid = "h" + $(this).attr('id');
+		var sid = 100+id;
 		let content = "";
 		fetch('http://' + ip +'/status')
 		.then(response => response.json())
@@ -179,6 +199,7 @@ function loadData() {
 	var Bh = data.lights[relayindex].blue;
 	var Schriftfarbe = rgbToHex(Rk, Gk, Bk);
 	var Hintergrundfarbe = rgbToHex(Rh, Gh, Bh);
+	var WeissTemperatur = data.lights[relayindex].temp;
 	if (data.lights[relayindex].mode === 'color'){
 	var Leuchtmittelfarbe = Hintergrundfarbe;
 	var Helligkeit = data.lights[relayindex].gain;
@@ -192,6 +213,7 @@ function loadData() {
 		} else if(Helligkeit > 77 && Helligkeit < 98){var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-7"></i>';
 		} else {var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-8"></i>';}
 	var woc = "gain";
+	var Regler = '<div class="slidecontainer" title="Dimmen"><input type="range" min="' + minimumdimmer + '" max="100" step="1" id="' + sid + '" name="' + sid + '" style="accent-color:' + Leuchtmittelfarbe + ';" value="' + Helligkeit + '" class="slider" /></div>';
 	var Effektwechsel = '&#10;Klick f&uuml;r Effektwechsel';
 	var Effeckt = data.lights[relayindex].effect;
 		if(Effeckt === 1){var LichtShow = '<i style="color:#ff0;" title="Meteor Shower - Meteorregen' + Effektwechsel + '" class="relay-off mdi mdi-meteor"></i>';
@@ -201,16 +223,17 @@ function loadData() {
 		} else {var LichtShow = '<i style="color:#888;" title="Effects Off - kein Effekt' + Effektwechsel + '" class="relay-off mdi mdi-alarm-light-off-outline"></i>';}
 	var onRGBW = "rgb(" + data.lights[relayindex].red + " " + data.lights[relayindex].green + " " + data.lights[relayindex].blue + ")";
 		if(shellytype === 'light'){
-		var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'white\');\">&#169;</nobr><nobr class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		var ColorModus = "<nobr><big title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'white\');\">&#169;</big><big class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</big><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 		} else {
-		var ColorModus = "<big><nobr class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		var ColorModus = "<nobr><big class=\"schalter\" onclick=\"EffekteSchalten(\'" + ip + "\', \'" + shellytype + "\');\">" + LichtShow + "&nbsp;</big><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 		}
 	var ColorChange = "<div title=\"Klick f&uuml;r Farbwechsel\" class=\"schalter\" onclick=\"Farbwechsel(\'" + ip + "\', \'" + shellytype + "\');\">";
 		if (data.lights[relayindex].timer_remaining === 0) {
-		var SEK = "";
+		var SEK = "<nobr><span title=\"Klick f&uuml;r dauernden Farbwechsel\" class=\"schalter\" onclick=\"laufenderFarbwechsel(\'" + ip + "\', \'" + shellytype + "\');\"><i style='color:" + Leuchtmittelfarbe + ";' class='relay-off mdi mdi-invert-colors'></i></span></nobr></nobr></nobr>";
 		} else {
 		let wirklicheZeit = Sekundenumwandeln(data.lights[relayindex].timer_remaining);
-		var SEK = "<span title=\"noch bis An oder Aus\">" + wirklicheZeit + "</span>";
+		var Regler = "<big style='display:none'>" + Regler + "</span>";
+		var SEK = "<br><span title=\"noch bis An oder Aus\">" + wirklicheZeit + "</span>";
 		};
 	} else { 
 	var Helligkeit = data.lights[relayindex].brightness;
@@ -224,25 +247,29 @@ function loadData() {
 		} else if(Helligkeit > 77 && Helligkeit < 98){var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-7"></i>';
 		} else {var Dimmer = '<i style="color:#00FFFF;" class="relay-off mdi mdi-circle-slice-8"></i>';}
 	var woc = "brightness";
-	var onRGBW = "mode: " + data.lights[relayindex].mode + ", Temp: " + data.lights[relayindex].temp + "K";
+	var Regler = '<div class="slidecontainer" title="Dimmen"><input type="range" min="' + minimumdimmer + '" max="100" step="1" id="' + sid + '" name="' + sid + '" value="' + Helligkeit + '" class="slider" /></div>';
+		if(typeof WeissTemperatur === 'undefined'){
+		WeissTemperatur = 'nicht &auml;nderbar ';
+		}
+	var onRGBW = " Temp: " + WeissTemperatur + " K";
 	var Leuchtmittelfarbe = "#ffffff";
-//		Colorbulb-Umschalter im Weissmodus einblenden und bei DUO, RGBW2 sowie Dimmer(immer weiss) ausblenden
+//		Colorbulb-Umschalter im Weissmodus einblenden und bei DUO, RGBW2 sowie "kalibrierten" Dimmer(immer weiss) ausblenden
 		if(typeof data.lights[relayindex].mode !== 'undefined'){
-			if(data.calib_progress >= 1){
-			var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+			if(data.calibrated === true){
+			var ColorModus = "<nobr><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 			} else {
 				if(shellytype === 'light'){
-				var ColorModus = "<big><nobr title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'color\');\">&#169;&nbsp;</nobr><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+				var ColorModus = "<nobr><big title=\"Klick f&uuml;r Color- oder WeissModus\" class=\"schalter\" onclick=\"BulbModus(\'" + ip + "\', \'color\');\">&#169;&nbsp;</big><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 				} else {
-				var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+				var ColorModus = "<nobr><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 				}
 			}
 		} else {
-		var ColorModus = "<big><nobr title=\"Klick f&uuml;r eingestellte Dimmstufen\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</nobr></big>";
+		var ColorModus = "<nobr><big title=\"Klick f&uuml;r eingestellte Dimmstufen&#10;" + Helligkeit + "%\" class=\"schalter\" onclick=\"BulbDimmen(\'" + ip + "\', \'" + shellytype + "\', \'" + relayindex + "\', \'" + woc + "\');\">" + Dimmer + "&nbsp;</big>";
 		};
 	if(typeof data.lights[relayindex].red !== 'undefined'){
 	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatur\" class=\"schalter\" onclick=\"WeissTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
-	} else if(data.lights[relayindex].temp > 2699){
+	} else if(WeissTemperatur > 2699){
 	var ColorChange = "<div title=\"Klick f&uuml;r WeissTemperatur\" class=\"schalter\" onclick=\"DuoTemp(\'" + ip + "\', \'" + shellytype + "\');\">";
 	} else {
 	var ColorChange = "";
@@ -251,7 +278,8 @@ function loadData() {
 		var SEK = "";
 		} else {
 		let wirklicheZeit = Sekundenumwandeln(data.lights[relayindex].timer_remaining);
-		var SEK = "<span title=\"noch bis An oder Aus\">" + wirklicheZeit + "</span>";
+		var Regler = "<big style='display:none'>" + Regler + "</span>";
+		var SEK = "<br><span title=\"noch bis An oder Aus\">" + wirklicheZeit + "</span>";
 		};
 	}
 	let FWN = data.update.new_version;
@@ -268,28 +296,30 @@ function loadData() {
 		}
 	}
 		content += "<div>" + linkname + "</div>";
+		let accesskey = ' &#10;accesskey ' + id;
+		if(id > 9){accesskey = '&#10;';}
 		if(data.lights[relayindex].ison == true)
 			if(id > 0 && id < 5)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + accesskey + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-track-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 4 && id < 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + accesskey + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-ceiling-light"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 8)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + accesskey + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-coach-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 9)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + accesskey + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-lamp"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id == 0)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + ' accesskey ' + id + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="' + onRGBW + accesskey + '" style="color:' + Leuchtmittelfarbe + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
 			else
 			if(id > 11 && id < 18)
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + ' accesskey ' + id + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="'+ onRGBW + accesskey + '" style="color:' + onRGBW + ';" class="relay relay-off mdi mdi-led-strip-variant"><big accesskey="' + id + '"></big></i></div>';
 			else
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="Ausschalten accesskey ' + id + '" style="color:#ffffff;" class="relay relay-off mdi mdi-lightbulb-on-outline"><big accesskey="' + id + '"></big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\', '+ relayindex + ' ,\'' + ip + '\');"><i title="Ausschalten' + accesskey + '" style="color:#ffffff;" class="relay relay-off mdi mdi-lightbulb-on-outline"><big accesskey="' + id + '"></big></i></div>';
 		else
-		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\',' + relayindex + ',\'' + ip + '\');"><i title="Anschalten accesskey ' + id + '" style="color:#000000;" class="relay relay-off mdi mdi-lightbulb-outline"><big accesskey="' + id + '">Aus</big></i></div>';
+		content += '<div style="width:100%; text-align: center;" onclick="ToggleShelly(\'' + shellytype + '\',' + relayindex + ',\'' + ip + '\');"><i title="Anschalten' + accesskey + '" style="color:#000000;" class="relay relay-off mdi mdi-lightbulb-outline"><big accesskey="' + id + '">Aus</big></i></div>';
 		content += "<div style=\"text-align: center; padding-top: 1px; \">";
 	if(typeof data.meters[relayindex].power !== 'undefined')
 	L1 = data.meters[relayindex].power;
@@ -297,16 +327,28 @@ function loadData() {
 	L3 = L2.toFixed(2);
 	L4 = L2.toFixed(0);
 	if (data.meters[relayindex].power > 0)
-	content += ColorChange + "<nobr style=\"background-color:" + Hintergrundfarbe + "; color:" + Schriftfarbe + ";\">&nbsp;" + data.meters[relayindex].power + "W " + Helligkeit + "%&nbsp;</nobr><br>" + SEK + EndColorChange;
+	content += ColorChange + "<nobr><big style=\"background-color:" + Hintergrundfarbe + "; color:" + Schriftfarbe + ";\">&nbsp;" + data.meters[relayindex].power + "W " + Helligkeit + "%&nbsp;</big>" + SEK + EndColorChange;
 	else if (data.lights.overpower === false)
-	content += "<big style=\"color:#00ffff;\" title=\"kein PowerMetering\">-</big><br>" + SEK;
-	else 
-	content += "<i style=\"color:" + Hintergrundfarbe + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i><br>" + SEK;
-		content += "<fieldset style='width:88%;'><legend style='text-align:left;'>" + ColorModus + NFW +"</legend></fieldset>";
-		content += "</div>";
+	content += "<nobr><big style=\"color: #00ffff;\" title=\"kein PowerMetering\">&nbsp;-&nbsp;</big>" + SEK;
+	else
+	content += "<i style=\"color:" + Hintergrundfarbe + "\" title=\"keine Leistungsabnahme\" class=\"relay-off mdi mdi-brightness-1\"></i>" + SEK + "</nobr><br>";
+		content += EndColorChange + "<legend style='text-align:left;'>" + ColorModus + NFW + "<br>" + Regler + "</legend></fieldset>";
+		content += EndColorChange;
+		if(Helligkeit < 1){
+		lichtaus(shellytype, relayindex, ip);
+		}
 		$('#' + id ).html(content);
-document.getElementById("Alles").innerHTML = "<b style=\"text-align: center; color:#10ff00;\">" + L3 + " </b>";
-document.getElementById("Tabs").innerHTML = "alle Lichter: " + L4 + " Watt";
+		document.getElementById("Alles").innerHTML = "<b style=\"text-align: center; color: #0f0;\">" + L3 + " </b>";
+		document.getElementById("Tabs").innerHTML = "Lichter: " + L4 + " Watt";
+		var range = document.getElementById(sid);
+		var output = document.getElementById(sid);
+		output.innerHTML = range.value;
+		range.oninput = function() {
+			output.innerHTML = range.value;
+			fetch('http://' + ip + '/' + shellytype + '/' + relayindex + '?' + woc + '=' + range.value)
+			.then()	
+			.catch(err => alert(name + ' Dimmen auf ' + range.value + '% fehlgeschlagen'));
+			}
 		})
 	});
   }, millis
