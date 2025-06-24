@@ -36,7 +36,7 @@ big{font-size:1em;}
 .slider:hover{opacity: 2;}
 </style><script>
 let Dauer = 5;		// aller wieviel Sekunden soll neu gelesen werden?
-let minimumdimmer = 1;	// Schieberegler Minimum, normal = 1, auch 0 (außer bei Dimmer) möglich und schaltet die Leuchte Aus
+let minimumdimmer = 1;	// Schieberegler Minimum, normal = 1, auch 0 (auÃŸer bei Dimmer) mÃ¶glich und schaltet die Leuchte Aus
 let dimpos = 0;		// Startpositionen der Dimm- und Farbwerte, 0 entspricht dem ersten Wert
 let effpos = 0;
 let duopos = 0;
@@ -125,7 +125,7 @@ fetch('http://' + ip +'/'+ shellytype +'/' + relayindex + '?turn=toggle')
 }
 function Farbwechsel(ip, shellytype, ud){
 let Bulb = ip;
-let Bred = Math.round(Math.random() * 255);	// für dunklere Farben etwa 100 als Multiplikator pro Farbe
+let Bred = Math.round(Math.random() * 255);	// fÃ¼r dunklere Farben etwa 100 als Multiplikator pro Farbe
 let Bgreen = Math.round(Math.random() * 255);
 let Bblue = Math.round(Math.random() * 255);
 let Bbrightness = Math.round(Math.random() * 60); // maximal 100
@@ -136,7 +136,7 @@ fetch('http://' + Bulb + '/' + shellytype + '/0?red=' + Bred + '&green=' + Bgree
 function laufenderFarbwechsel(ip, shellytype, ud){
 setInterval(function() {
 let Bulb = ip;
-let Bred = Math.round(Math.random() * 222);	// für dunklere Farben etwa 100 als Multiplikator pro Farbe
+let Bred = Math.round(Math.random() * 222);	// fÃ¼r dunklere Farben etwa 100 als Multiplikator pro Farbe
 let Bgreen = Math.round(Math.random() * 222);
 let Bblue = Math.round(Math.random() * 222);	// maximal 255
 let Bbrightness = Math.round(Math.random() * 88); // maximal 100
@@ -144,7 +144,7 @@ fetch('http://' + Bulb + '/' + shellytype + '/0?red=' + Bred + '&green=' + Bgree
 .then()
 .catch(err => alert('kein ' + Bulb + ' Farbwechsel'));
 }, 6000);
-// kein Link für TimerStop verbaut, Seite Neuladen stoppt den Timer, falls aktiviert
+// kein Link fÃ¼r TimerStop verbaut, Seite Neuladen stoppt den Timer, falls aktiviert
 }
 function BulbModus(ip, ud){
 fetch('http://' + ip + '/settings?mode=' + ud)
@@ -342,7 +342,6 @@ function loadData() {
 		document.getElementById("Tabs").innerHTML = "Lichter: " + L4 + " Watt";
 		var range = document.getElementById(sid);
 		var output = document.getElementById(sid);
-		output.innerHTML = range.value;
 		range.oninput = function() {
 			output.innerHTML = range.value;
 			fetch('http://' + ip + '/' + shellytype + '/' + relayindex + '?' + woc + '=' + range.value)
